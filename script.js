@@ -1,64 +1,59 @@
-//your JS code here. If required.
 // Get table body
-const output = document.getElementById("output");
+var output = document.getElementById("output");
 
-// Show initial loading row
-output.innerHTML = `
-  <tr>
-    <td colspan="2">Loading...</td>
-  </tr>
-`;
+// Initial "Loading..." row with id="loading"
+output.innerHTML = '<tr id="loading"><td colspan="2">Loading...</td></tr>';
 
-// Function to create random promise (1–3 seconds)
+// Function to create one promise with random delay between 1 and 3 seconds
 function createPromise() {
-  const time = Math.random() * 2 + 1; // between 1 and 3 seconds
+  // time in seconds: 1 <= t < 3
+  var time = Math.random() * 2 + 1;
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
+  return new Promise(function (resolve) {
+    setTimeout(function () {
+      // resolve with the time taken (seconds)
       resolve(time);
     }, time * 1000);
   });
 }
 
 // Create 3 promises
-const p1 = createPromise();
-const p2 = createPromise();
-const p3 = createPromise();
+var p1 = createPromise();
+var p2 = createPromise();
+var p3 = createPromise();
 
-// Wait for all promises
-Promise.all([p1, p2, p3]).then((times) => {
-  
-  // Clear "Loading..." row
+// Wait for all promises to resolve
+Promise.all([p1, p2, p3]).then(function (times) {
+  // Remove the "Loading..." row
   output.innerHTML = "";
 
-  // Add rows for each promise
-  times.forEach((time, index) => {
-    const row = document.createElement("tr");
+  // times is an array [t1, t2, t3]
+  for (var i = 0; i < times.length; i++) {
+    var tr = document.createElement("tr");
 
-    const col1 = document.createElement("td");
-    col1.textContent = Promise ${index + 1};
+    var tdName = document.createElement("td");
+    tdName.textContent = "Promise " + (i + 1);
 
-    const col2 = document.createElement("td");
-    col2.textContent = time.toFixed(3);
+    var tdTime = document.createElement("td");
+    tdTime.textContent = times[i].toFixed(3); // e.g., "2.000"
 
-    row.appendChild(col1);
-    row.appendChild(col2);
-    output.appendChild(row);
-  });
+    tr.appendChild(tdName);
+    tr.appendChild(tdTime);
+    output.appendChild(tr);
+  }
 
-  // Calculate total time (max value)
-  const totalTime = Math.max(...times);
+  // Total row – time for all promises to resolve (max of the three)
+  var maxTime = Math.max(times[0], times[1], times[2]);
 
-  // Add total row
-  const totalRow = document.createElement("tr");
+  var totalRow = document.createElement("tr");
 
-  const totalCol1 = document.createElement("td");
-  totalCol1.textContent = "Total";
+  var totalName = document.createElement("td");
+  totalName.textContent = "Total";
 
-  const totalCol2 = document.createElement("td");
-  totalCol2.textContent = totalTime.toFixed(3);
+  var totalTime = document.createElement("td");
+  totalTime.textContent = maxTime.toFixed(3);
 
-  totalRow.appendChild(totalCol1);
-  totalRow.appendChild(totalCol2);
+  totalRow.appendChild(totalName);
+  totalRow.appendChild(totalTime);
   output.appendChild(totalRow);
 });
